@@ -14,11 +14,12 @@ print(f"Fricatives: {fricatives}")
 colors = sns.color_palette("Set2", len(fricatives))
 fricative_colors = dict(zip(fricatives, colors))
 
-fig, axes = plt.subplots(2, 3, figsize=(18, 12), constrained_layout=True)
+fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 if len(fricatives) > 6:
     fricatives_to_plot = fricatives[:6]
 else:
     fricatives_to_plot = fricatives
+    
 for idx, fricative in enumerate(fricatives_to_plot):
     row = idx // 3
     col = idx % 3
@@ -35,22 +36,20 @@ for idx, fricative in enumerate(fricatives_to_plot):
                                             edgecolor="gray", alpha=0.7))
     
     if row == 1:
-        axes[row, col].set_xlabel('Frequency (kHz)', fontsize=18)
+        axes[row, col].set_xlabel('')
     else:
         axes[row, col].set_xlabel('')
         axes[row, col].set_xticklabels([])
-    
+    if col != 0:
+        axes[row, col].set_ylabel('')
+        axes[row, col].set_yticklabels([])
+    else:
+        axes[row, col].set_ylabel('')
     axes[row, col].set_xlim(0, 16)
     axes[row, col].set_ylim(-50, 50)
     
     axes[row, col].grid(True, alpha=0.3, linestyle='--', color='gray')
-    
-    if col == 0:
-        axes[row, col].set_ylabel('Intensity (dB)', fontsize=18)
-    else:
-        axes[row, col].set_ylabel('')
-        axes[row, col].set_yticklabels([])
-    axes[row, col].tick_params(axis='both', labelsize=18)
+    axes[row, col].tick_params(axis='both', labelsize=14)
 
     max_amp = fricative_data['Amplitude'].max()
     min_amp = fricative_data['Amplitude'].min()
@@ -62,10 +61,14 @@ for idx, fricative in enumerate(fricatives_to_plot):
                            xytext=(max_freq_at_max_amp + 0.8, max_amp - 3),
                            fontsize=18,
                            arrowprops=dict(arrowstyle='->', color='red', alpha=0.7))
+
 for idx in range(len(fricatives_to_plot), 6):
     row = idx // 3
     col = idx % 3
     axes[row, col].set_visible(False)
-# plt.suptitle('Mean FFT Spectra of Fricatives (0-16 kHz)', fontsize=20, fontweight='bold', y=1.02)
+
+fig.supxlabel('Frequency (kHz)', fontsize=18, fontweight='bold', y=0.02)
+fig.supylabel('Intensity (dB)', fontsize=18, fontweight='bold', x=0.02)
+plt.tight_layout()
 plt.savefig("pics/fricatives.png", dpi=300, bbox_inches='tight')
 plt.show()
